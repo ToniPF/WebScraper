@@ -49,11 +49,17 @@ class Client(object):
 
         return products
 
+    def debug_products(self, products):
+        for product in products:
+            for element in product:
+                print(element)
+            print()
+
     def run(self):
         html = self.download_html()
         page_tree = BeautifulSoup(html, self.html_parser)
         products = self.seek(page_tree)
-        print(products)
+        self.debug_products(products)
 
 
 if __name__ == '__main__':
