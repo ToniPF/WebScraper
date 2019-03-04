@@ -22,6 +22,11 @@ class Client(object):
         return html
 
     def seek(self, tree):
+        """ This is the method which handle the entire search. """
+        containers = self._seek_containers(tree)
+        return containers
+
+    def _seek_containers(self, tree):
         """ Getting all the items we want inspect
             from container/s. """
         items_container = []
