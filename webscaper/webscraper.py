@@ -21,10 +21,20 @@ class Client(object):
         connection.close()
         return html
 
+    def seek(self, tree):
+        """ Getting all the items we want inspect
+            from container/s. """
+        items_container = []
+        containers = tree.findAll('ul', 'goodlist_1')
+        for container in containers:
+            items_container += container.find_all('li')
+
+        return items_container
+
     def run(self):
         html = self.download_html()
         page_tree = BeautifulSoup(html, self.html_parser)
-        print(page_tree)
+        items_container = self.seek(page_tree)
 
 
 if __name__ == '__main__':
