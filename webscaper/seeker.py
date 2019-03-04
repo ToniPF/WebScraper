@@ -30,9 +30,11 @@ class Seeker(object):
         products = []
         for item_container in item_containers:
             price = item_container.find('div', 'priceitem')
-            new_price = price.find('span', 'price')['oriprice']
-            old_price = price.find('span', 'price_old')['oriprice']
-            title = item_container.find('span', 'title').text
-            products.append((title, new_price, old_price))
-
+            products.append(
+                Product(
+                    item_container.find('span', 'title').text,
+                    price.find('span', 'price')['oriprice'],
+                    price.find('span', 'price_old')['oriprice']
+                )
+            )
         return products

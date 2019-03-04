@@ -24,9 +24,8 @@ class Client(object):
 
     def debug_products(self, products):
         for product in products:
-            for element in product:
-                print(element)
-            print()
+            print(product)
+        print()
 
     def run(self):
         html = self.download_html()
