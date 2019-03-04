@@ -3,16 +3,18 @@
 # vim set fileencoding=utf-8
 from urllib.request import urlopen
 from bs4 import BeautifulSoup
+from messenger import ConsoleMessenger
 
 
 class Client(object):
 
     html_parser = "html.parser"
 
-    def __init__(self, url, seeker):
+    def __init__(self, url, seeker, out=ConsoleMessenger()):
         object.__init__(self)
         self.url = url
         self.seeker = seeker
+        self.out = out
 
     def download_html(self):
         """ This method is opening the connection
@@ -22,13 +24,8 @@ class Client(object):
         connection.close()
         return html
 
-    def debug_products(self, products):
-        for product in products:
-            print(product)
-        print()
-
     def run(self):
         html = self.download_html()
         page_tree = BeautifulSoup(html, self.html_parser)
         products = self.seeker.seek(page_tree)
-        self.debug_products(products)
+        self.out.send(products)
