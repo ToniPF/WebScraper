@@ -24,7 +24,8 @@ class Client(object):
     def seek(self, tree):
         """ This is the method which handle the entire search. """
         containers = self._seek_containers(tree)
-        return containers
+        products = self._seek_products(containers)
+        return products
 
     def _seek_containers(self, tree):
         """ Getting all the items we want inspect
@@ -36,10 +37,23 @@ class Client(object):
 
         return items_container
 
+    def _seek_products(self, item_containers):
+        """ Getting the information we want from every product. """
+        products = []
+        for item_container in item_containers:
+            price = item_container.find('div', 'priceitem')
+            new_price = price.find('span', 'price')['oriprice']
+            old_price = price.find('span', 'price_old')['oriprice']
+            title = item_container.find('span', 'title').text
+            products.append((title, new_price, old_price))
+
+        return products
+
     def run(self):
         html = self.download_html()
         page_tree = BeautifulSoup(html, self.html_parser)
-        items_container = self.seek(page_tree)
+        products = self.seek(page_tree)
+        print(products)
 
 
 if __name__ == '__main__':
