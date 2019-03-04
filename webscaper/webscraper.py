@@ -2,9 +2,12 @@
 # -*- coding: utf-8 -*-
 # vim set fileencoding=utf-8
 from urllib.request import urlopen
+from bs4 import BeautifulSoup
 
 
 class Client(object):
+
+    html_parser = "html.parser"
 
     def __init__(self, url):
         object.__init__(self)
@@ -18,10 +21,10 @@ class Client(object):
         connection.close()
         return html
 
-
-
     def run(self):
-        pass
+        html = self.download_html()
+        page_tree = BeautifulSoup(html, self.html_parser)
+        print(page_tree)
 
 
 if __name__ == '__main__':
