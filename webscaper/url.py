@@ -2,10 +2,7 @@
 # -*- coding: utf-8 -*-
 # vim set fileencoding=utf-8
 import re
-
-
-class InvalidUrlException(Exception):
-    """ Invalid url format. """
+from exceptions import InvalidUrlException
 
 
 class Url(object):

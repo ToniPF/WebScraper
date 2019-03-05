@@ -4,8 +4,8 @@
 from client import Client
 from seeker import Seeker
 from urllib.error import HTTPError, URLError
-from url import Url, InvalidUrlException
-from exceptions import IllegalArgumentError
+from url import Url
+from exceptions import IllegalArgumentError, InvalidUrlException
 
 def main():
 

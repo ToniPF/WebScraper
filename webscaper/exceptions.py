@@ -3,6 +3,10 @@
 # vim: set fileencoding=utf8
 
 
+class InvalidUrlException(Exception):
+    """ Invalid url format. """
+
+
 class IllegalArgumentError(ValueError):
     """ Not allowed argument. """
     def __init__(self, msg):

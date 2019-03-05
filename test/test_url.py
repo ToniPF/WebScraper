@@ -4,9 +4,10 @@
 import sys
 import unittest
 from parameterized import parameterized
-sys.path.append('../webscaper')
-
-from url import Url, InvalidUrlException
+# sys.path.append('../webscaper')
+sys.path.append('/home/toni/Documentos/Ingenieria_Informatica/Curso-3/2Q/WebProject/Homework-1-SimpleWebScraping/WebScraper/webscaper')
+from url import Url
+from exceptions import InvalidUrlException
 
 
 class TestUrl(unittest.TestCase):
