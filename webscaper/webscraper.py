@@ -5,7 +5,7 @@ from client import Client
 from seeker import Seeker
 from urllib.error import HTTPError, URLError
 from url import Url, InvalidUrlException
-
+from exceptions import IllegalArgumentError
 
 def main():
 
@@ -22,6 +22,8 @@ def main():
         print('ERROR: HTTP Error 403:', e.msg + '.', e.reason)
     except URLError as e:
         print('ERROR: Url Error:', e.reason + '.')
+    except IllegalArgumentError as e:
+        print(e.msg)
 
 
 if __name__ == '__main__':
