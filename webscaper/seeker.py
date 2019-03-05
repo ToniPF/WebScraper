@@ -1,10 +1,17 @@
 #!/user/bin/env python3
 # -*- coding: utf-8 -*-
 # vim: set fileencoding=utf8
+from abc import ABC, abstractmethod
 from product import Product
 
 
-class Seeker(object):
+class ISeeker(ABC):
+    @abstractmethod
+    def seek(self, tree):
+        raise NotImplementedError
+
+
+class Seeker(ISeeker):
 
     def __init__(self):
         object.__init__(self)
