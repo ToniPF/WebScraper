@@ -14,7 +14,7 @@ class Url(object):
 
     def __init__(self, url):
         object.__init__(self)
-        if not self.url_pattern.match(url):
+        if not isinstance(url, str) or not self.url_pattern.match(url):
             raise InvalidUrlException("Url: {} is not a valid url". format(url))
         self.url = url
 
