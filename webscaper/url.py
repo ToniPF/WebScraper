@@ -10,7 +10,7 @@ class InvalidUrlException(Exception):
 
 class Url(object):
 
-    url_pattern = re.compile('^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\?([^#]*))?(#(.*))?')
+    url_pattern = re.compile('https?://(?:[-\w.]|(?:%[\da-fA-F]{2}))+')
 
     def __init__(self, url):
         object.__init__(self)
