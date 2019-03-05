@@ -8,7 +8,8 @@ from url import Url, InvalidUrlException
 
 
 def main():
-    target_url = "https://www.banggood.com/Flashdeals.html"
+
+    target_url = Url("https://www.banggood.com/Flashdeals.html")
 
     try:
         seeker = Seeker()

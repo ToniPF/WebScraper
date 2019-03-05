@@ -19,7 +19,7 @@ class Client(object):
     def download_html(self):
         """ This method is opening the connection
             to grab the html and then close the connection. """
-        connection = urlopen(self.url)
+        connection = urlopen(self.url.url)
         html = connection.read()
         connection.close()
         return html
