@@ -13,6 +13,8 @@ class ISeeker(ABC):
 
 class Seeker(ISeeker):
 
+    info_unknown = 'unknown'
+
     def __init__(self):
         object.__init__(self)
 
@@ -46,18 +48,38 @@ class Seeker(ISeeker):
         """
         products = []
         for item_container in item_containers:
-            old_price = new_price = 'UNKNOWN'
-            price = item_container.find('div', 'priceitem')
-            title = item_container.find('span', 'title').text
-
+            title = self._get_title(item_container)
             if not title:
                 continue
-
-            if price.find('span', 'price'):
-                new_price = price.find('span', 'price')['oriprice']
-
-            if price.find('span', 'price_old'):
-                old_price = price.find('span', 'price_old')['oriprice']
-
+            price_container = item_container.find('div', 'priceitem')
+            new_price = self._get_price(price_container, 'price')
+            old_price = self._get_price(price_container, 'price_old')
             products.append(Product(title, new_price, old_price))
         return products
+
+    def _get_title(self, item_container):
+        """ Look for the product title.
+            :param item_container: structure that contains the product information.
+            :return: The product title.
+            :rtype: str
+        """
+        content = None
+        if item_container:
+            content = item_container.find('span', 'title')
+        if content:
+            return content.text
+        return None
+
+    def _get_price(self, price_container, price_type):
+        """ Look for the product info.
+            :param price_container: structure that contains the product prices.
+            :param price_type: str used to find the appropriate price.
+            :return: The product price (new or old, depending on price_type parameter).
+            :rtype: str
+        """
+        content = None
+        if price_container:
+            content = price_container.find('span', price_type)
+        if content:
+            return content['oriprice']
+        return Seeker.info_unknown
