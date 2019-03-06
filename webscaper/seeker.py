@@ -46,12 +46,18 @@ class Seeker(ISeeker):
         """
         products = []
         for item_container in item_containers:
+            old_price = new_price = 'UNKNOWN'
             price = item_container.find('div', 'priceitem')
-            products.append(
-                Product(
-                    item_container.find('span', 'title').text,
-                    price.find('span', 'price')['oriprice'],
-                    price.find('span', 'price_old')['oriprice']
-                )
-            )
+            title = item_container.find('span', 'title').text
+
+            if not title:
+                continue
+
+            if price.find('span', 'price'):
+                new_price = price.find('span', 'price')['oriprice']
+
+            if price.find('span', 'price_old'):
+                old_price = price.find('span', 'price_old')['oriprice']
+
+            products.append(Product(title, new_price, old_price))
         return products
