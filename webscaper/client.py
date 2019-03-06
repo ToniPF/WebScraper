@@ -1,12 +1,12 @@
 #!/user/bin/env python3
 # -*- coding: utf-8 -*-
 # vim set fileencoding=utf-8
-from bs4 import BeautifulSoup
+# from bs4 import BeautifulSoup
 from url import Url
 from messenger import IMessenger, ConsoleMessenger
 from seeker import ISeeker
 from exceptions import IllegalArgumentError
-from tools import Downloader
+from tools import Downloader, HTMLParser
 
 
 class Client(object):
@@ -27,11 +27,19 @@ class Client(object):
 
     def download_html(self):
         """ This method calls the downloader that handles
-            the connection and grab de html. """
+            the connection and grab de html.
+        """
         return Downloader.download(self.url)
+
+    def parse_html(self, html):
+        """ This method calls the parser that
+            takes de html object and convert it
+            into a nested data structure.
+        """
+        return HTMLParser.parse(html)
 
     def run(self):
         html = self.download_html()
-        page_tree = BeautifulSoup(html, self.html_parser)
+        page_tree = self.parse_html(html)
         products = self.seeker.seek(page_tree)
         self.out.send(products)
