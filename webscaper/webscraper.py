@@ -7,6 +7,7 @@ from urllib.error import HTTPError, URLError
 from url import Url
 from exceptions import IllegalArgumentError, InvalidUrlException
 
+
 def main():
 
     target_url = Url("https://www.banggood.com/Flashdeals.html")
