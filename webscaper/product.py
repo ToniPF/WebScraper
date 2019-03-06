@@ -12,5 +12,5 @@ class Product(object):
         self.old_price = old_price
 
     def __str__(self):
-        return "Title: {}\n New price: {}\n Old price {}\n"\
+        return "Title: {}\n New price: {}\n Old price {}"\
             .format(self.title, self.new_price, self.old_price)

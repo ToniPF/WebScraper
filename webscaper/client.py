@@ -4,7 +4,7 @@
 # from bs4 import BeautifulSoup
 from url import Url
 from messenger import IMessenger, ConsoleMessenger
-from seeker import ISeeker
+from seeker import ISeeker, ParameterizedSeeker
 from exceptions import IllegalArgumentError
 from tools import Downloader, HTMLParser
 
@@ -41,5 +41,7 @@ class Client(object):
     def run(self):
         html = self.download_html()
         page_tree = self.parse_html(html)
-        products = self.seeker.seek(page_tree)
+
+        products = ParameterizedSeeker().seek(page_tree)
+        # products = self.seeker.seek(page_tree)
         self.out.send(products)

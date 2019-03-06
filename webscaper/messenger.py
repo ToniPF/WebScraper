@@ -16,4 +16,4 @@ class ConsoleMessenger(IMessenger):
             :param message: A objects list of type Products.
         """
         for product in message:
-            destination.write(product.__str__())
+            destination.write(product.__str__() + '\n')

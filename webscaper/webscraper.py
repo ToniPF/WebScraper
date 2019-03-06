@@ -25,6 +25,8 @@ def main():
         print('ERROR: Url Error:', e.reason + '.')
     except IllegalArgumentError as e:
         print(e.msg)
+    except (AttributeError, KeyError) as ex:
+        print(ex)
 
 
 if __name__ == '__main__':

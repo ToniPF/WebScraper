@@ -35,7 +35,7 @@ class Seeker(ISeeker):
             :rtype: List
         """
         items_container = []
-        containers = tree.findAll('ul', 'goodlist_1')
+        containers = tree.find_all('ul', 'goodlist_1')
         for container in containers:
             items_container += container.find_all('li')
 
@@ -83,3 +83,52 @@ class Seeker(ISeeker):
         if content:
             return content['oriprice']
         return Seeker.info_unknown
+
+
+class ParameterizedSeeker(ISeeker):
+
+    containers, sub_containers, items, tmp_items = None, [], [], []
+    find_containers = "ParameterizedSeeker.containers = tree.find_all('ul', 'goodlist_1')"
+    find_sub_containers = "ParameterizedSeeker.sub_containers += container.find_all('li', '')"
+    find_items_info = ["ParameterizedSeeker.tmp_items.append(content.find('span','title').text)",
+                       "ParameterizedSeeker.tmp_items.append(content.find('div','priceitem')"
+                       ".find('span', 'price')['oriprice'])",
+                       "if content:\n"
+                       "    content = content.find('div','priceitem')\n"
+                       "    if content:\n"
+                       "        content = content.find('span', 'price_old')\n"
+                       "        if content:\n"
+                       "            ParameterizedSeeker.tmp_items.append(content['oriprice'])\n"
+                       "else:\n"
+                       "    ParameterizedSeeker.tmp_items.append('unknown')\n"
+                       "ParameterizedSeeker.items.append(ParameterizedSeeker.tmp_items)\n"
+                       "ParameterizedSeeker.tmp_items = []"]
+
+    item_begin = "if content:\n"\
+        "    content = content.find('{}','{}')\n"
+
+    item_end = "else:\n"\
+        "    ParameterizedSeeker.items.append('unknown')\n"\
+        "ParameterizedSeeker.items.append(tmp_items)\n" \
+        "ParameterizedSeeker.tmp_items = []"
+
+    def seek(self, tree):
+        return self._seek_containers(tree)
+
+    def _seek_containers(self, tree):
+        """ Getting all the items we want inspect from container/s.
+            :param tree: data structure made from a html.
+            :return: A html elements list that contains the products information.
+            :rtype: List
+        """
+
+        exec(ParameterizedSeeker.find_containers)
+
+        for container in ParameterizedSeeker.containers:
+            exec(ParameterizedSeeker.find_sub_containers)
+
+        for content in ParameterizedSeeker.sub_containers:
+            for search in ParameterizedSeeker.find_items_info:
+                exec(search)
+
+        return ParameterizedSeeker.items
