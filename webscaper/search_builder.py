@@ -9,21 +9,18 @@ items = [[('span', 'title'), 'text'],
          [('div', 'priceitem'), ('span', 'price'), 'oriprice'],
          [('div', 'priceitem'), ('span', 'price_old'), 'oriprice']]
 
-item_content = "if content:\n" \
-    "    content = content.find('{}','{}')\n"
+conditional = "if content:\n"
 
-text_select = "if content:\n" \
-    "    ParameterizedSeeker.tmp_items.append(content.text)\n"
+item_content = "    content = content.find('{}','{}')\n"
 
-tag_select = "if content:\n" \
-    "    ParameterizedSeeker.tmp_items.append(content['{}'])\n"
+text_select = "    ParameterizedSeeker.tmp_items.append(content.text)\n"
+
+tag_select = "    ParameterizedSeeker.tmp_items.append(content['{}'])\n"
 
 item_end = "else:\n" \
-           "    ParameterizedSeeker.tmp_items.append('unknown')\n" \
-           "ParameterizedSeeker.items.append(ParameterizedSeeker.tmp_items)\n" \
-           "ParameterizedSeeker.tmp_items = []"
+           "    ParameterizedSeeker.tmp_items.append('unknown')"
 
-string_tab = '    '
+string_tab = "    "
 
 
 def build_container_search():
@@ -39,22 +36,20 @@ def build_sub_container_search():
 
 
 def build_items_search():
-    items_list = []
+    items_list, item_info = [], []
     for item in items:
-        find_items_info, cnt = '', 0
-        for token in item:
+        find_items_info = ''
+        for cnt, token in enumerate(item):
+            find_items_info += add_conditional(cnt)
             if isinstance(token, tuple):
-                add_tabs(find_items_info, cnt)
                 find_items_info += item_content.format(token[0], token[1])
             else:
                 if token.__eq__(''):
                     break
                 elif token.__eq__('text'):
-                    add_tabs(find_items_info, cnt)
                     find_items_info += text_select
                     break
                 else:
-                    add_tabs(find_items_info, cnt)
                     find_items_info += tag_select.format(token)
                     break
         find_items_info += item_end
@@ -62,8 +57,13 @@ def build_items_search():
     return items_list
 
 
-def add_tabs(item_info, tabs_cnt):
-    for i in range(tabs_cnt):
-        item_info += string_tab
+def add_conditional(cnt):
+    indent_depth = add_tabs(cnt)
+    return indent_depth + conditional + indent_depth
 
-    return item_info
+
+def add_tabs(indent_depth):
+    tabs = ''
+    for i in range(indent_depth):
+        tabs += string_tab
+    return tabs
