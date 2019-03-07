@@ -3,6 +3,7 @@
 # vim: set fileencoding=utf8
 from abc import ABC, abstractmethod
 from product import Product
+import search_builder
 
 
 class ISeeker(ABC):
@@ -113,7 +114,22 @@ class ParameterizedSeeker(ISeeker):
         "ParameterizedSeeker.tmp_items = []"
 
     def seek(self, tree):
-        return self._seek_containers(tree)
+        # return self._seek_containers(tree)
+
+        exec(search_builder.build_container_search())
+
+        sub_container_search = search_builder.build_sub_container_search()
+        if not sub_container_search:
+            ParameterizedSeeker.sub_containers = ParameterizedSeeker.containers
+        else:
+            for container in ParameterizedSeeker.containers:
+                exec(search_builder.build_sub_container_search())
+
+        for content in ParameterizedSeeker.sub_containers:
+            for search in search_builder.build_items_search():
+                exec(search)
+
+        return ParameterizedSeeker.items
 
     def _seek_containers(self, tree):
         """ Getting all the items we want inspect from container/s.
