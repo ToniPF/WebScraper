@@ -4,12 +4,13 @@
 import sys
 import re
 
+'''
 container = ['ul', 'goodlist_1']
 sub_container = ['li', '']
 items = [[('span', 'title'), 'text'],
          [('div', 'priceitem'), ('span', 'price'), 'oriprice'],
          [('div', 'priceitem'), ('span', 'price_old'), 'oriprice']]
-
+'''
 conditional = "if content:\n"
 
 item_content = "    content = content.find('{}','{}')\n"
@@ -75,6 +76,7 @@ def add_tabs(indent_depth):
 #
 ################################################################################
 
+
 class SearchParams(object):
 
     def __init__(self, url, container, items, subcontainer=[]):
@@ -83,102 +85,102 @@ class SearchParams(object):
         self.items = items
         self.subcontainer = subcontainer
 
-
-URL = re.compile('https?://(?:[-\w.]|(?:%[\da-fA-F]{2}))+')
-CONTAINER = re.compile(r'^\s*\t*container\s*=\s*.*')
-SUBCONTAINER = re.compile(r'^\s*\t*subcontainer\s*=\s*.*')
-ITEM = re.compile(r'^\s*\t*item\s*=\s*.*')
+    def __str__(self):
+        return "url: {}\ncontainer:{}\nsubcontainer{}\nitems{}\n"\
+            .format(self.url, self.container, self.subcontainer, self.items)
 
 
-def read_data(filename):
-    url, container_line, sub_container_line, items_lines = '', '', '', []
-    with open(filename, 'r') as file:
-        reader = (line for line in map(str.strip, file) if line and line[0] != '*')
-        for line in reader:
-            print(line)
-            if URL.match(line):
-                url = line
-            elif CONTAINER.match(line):
-                container_line = line
-            elif SUBCONTAINER.match(line):
-                sub_container_line = line
-            elif ITEM.match(line):
-                items_lines.append(line)
+class SearchParser(object):
 
-        if missing_values(url, container_line, items_lines):
-            print_data_file_format()
+    URL = re.compile('https?://(?:[-\w.]|(?:%[\da-fA-F]{2}))+')
+    CONTAINER = re.compile(r'^\s*\t*container\s*=\s*.*')
+    SUBCONTAINER = re.compile(r'^\s*\t*subcontainer\s*=\s*.*')
+    ITEM = re.compile(r'^\s*\t*item\s*=\s*.*')
+
+    def read_data(self, filename):
+        url, container_line, sub_container_line, items_lines = '', '', '', []
+        with open(filename, 'r') as file:
+            reader = (line for line in map(str.strip, file) if line and line[0] != '*')
+            for line in reader:
+                print(line)
+                if SearchParser.URL.match(line):
+                    url = line
+                elif SearchParser.CONTAINER.match(line):
+                    container_line = line
+                elif SearchParser.SUBCONTAINER.match(line):
+                    sub_container_line = line
+                elif SearchParser.ITEM.match(line):
+                    items_lines.append(line)
+
+            if self.missing_values(url, container_line, items_lines):
+                self.print_data_file_format()
+                sys.exit(1)
+
+            container = self.parse_container(container_line)
+            sub_container = self.parse_container(sub_container_line)
+            items = self.parse_items(items_lines)
+        if id(sub_container) == id(''):
+            return SearchParams(url, container, items)
+        return SearchParams(url, container, items, sub_container)
+
+    def parse_items(self, items_lines):
+        items = []
+        for line in items_lines:
+            items.append(self.parse_item(line))
+        return items
+
+    def parse_item(self, items_line):
+        item_body_line = self.eliminate_head(items_line)
+        item_body_line, item_tag = self.get_item_chunck(item_body_line, '>')
+        item_body = item_body_line.split('|')
+        new_item = []
+        for token in item_body:
+            item = tuple(it.strip() for it in token.split(','))
+            if len(item) != 2:
+                self.print_data_file_format()
+                sys.exit(1)
+            new_item.append(item)
+        item_tag = item_tag.strip()
+        if id(item_tag) != id('-'):
+            new_item.append(item_tag)
+        return new_item
+
+    def parse_container(self, container):
+        data = container.split('=')
+        if len(data) != 2:
+            self.print_data_file_format()
+            sys.exit(1)
+        new_container = data[1].split(',')
+        return new_container
+
+    def get_item_chunck(self, items_line, delimiter):
+        data = items_line.split(delimiter)
+        self.check_split_data(data)
+        return data[0], data[1]
+
+    def eliminate_head(self, line):
+        data = line.split('=')
+        self.check_split_data(data)
+        return data[1].strip()
+
+    def check_split_data(self, data):
+        if len(data) != 2:
+            self.print_data_file_format()
             sys.exit(1)
 
-        container = parse_container(container_line)
-        sub_container = parse_container(sub_container_line)
-        parse_items(items_lines)
+    def missing_values(self, url, container_line, items_lines):
+        empty_id = id('')
+        return id(url) == empty_id or id(container_line) == empty_id or len(items_lines) == 0
+
+    def print_data_file_format(self):
+        print('#####################################\n')
+        print('File format:')
+        print('https://www.example.com')
+        print('container = tag, class')
+        print('subcontainer = tag, class')
+        print('item = tag, class | tag, class | ...\n')
+        print('#####################################')
 
 
-def parse_items(items_lines):
-    items = []
-    for line in items_lines:
-        items.append(parse_item(line))
-    return items
-
-
-def parse_item(items_line):
-    item_body_line = eliminate_head(items_line)
-    item_body_line, item_tag = get_item_chunck(item_body_line, '>')
-    item_body = item_body_line.split('|')
-    new_item = []
-    for token in item_body:
-        item = tuple(it.strip() for it in token.split(','))
-        if len(item) != 2:
-            print_data_file_format()
-            sys.exit(1)
-        new_item.append(item)
-    item_tag = item_tag.strip()
-    if id(item_tag) != id('-'):
-        new_item.append(item_tag)
-    print(new_item)
-    return new_item
-
-
-def parse_container(container):
-    data = container.split('=')
-    if len(data) != 2:
-        print_data_file_format()
-        sys.exit(1)
-    _container = data[1].split(',')
-    return _container
-
-
-def get_item_chunck(items_line, delimiter):
-    data = items_line.split(delimiter)
-    check_split_data(data)
-    return data[0], data[1]
-
-
-def eliminate_head(line):
-    data = line.split('=')
-    check_split_data(data)
-    return data[1].strip()
-
-
-def check_split_data(data):
-    if len(data) != 2:
-        print_data_file_format()
-        sys.exit(1)
-
-
-def missing_values(url, container_line, items_lines):
-    empty_id = id('')
-    return id(url) == empty_id or id(container_line) == empty_id or len(items_lines) == 0
-
-
-def print_data_file_format():
-    print('#####################################\n')
-    print('File format:')
-    print('https://www.example.com')
-    print('container = tag, class')
-    print('subcontainer = tag, class')
-    print('item = tag, class | tag, class | ...\n')
-    print('#####################################')
-
-
-# read_data('webscaper/test.data')
+params = SearchParser().read_data('webscaper/test.data')
+print(params.__str__())
