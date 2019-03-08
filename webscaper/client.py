@@ -41,7 +41,5 @@ class Client(object):
     def run(self):
         html = self.download_html()
         page_tree = self.parse_html(html)
-
-        products = ParameterizedSeeker().seek(page_tree)
-        # products = self.seeker.seek(page_tree)
+        products = self.seeker.seek(page_tree)
         self.out.send(products)

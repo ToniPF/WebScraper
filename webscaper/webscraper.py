@@ -1,11 +1,15 @@
 #!/user/bin/env python3
 # -*- coding: utf-8 -*-
 # vim set fileencoding=utf-8
+import sys
+import re
 from client import Client
 from seeker import Seeker
 from urllib.error import HTTPError, URLError
 from url import Url
 from exceptions import IllegalArgumentError, InvalidUrlException
+from seeker import ParameterizedSeeker
+from search_builder import SearchBuilder, SearchParser
 
 
 def main():
@@ -13,7 +17,17 @@ def main():
     target_url = Url("https://www.banggood.com/Flashdeals.html")
 
     try:
-        seeker = Seeker()
+        if len(sys.argv) == 2:
+            filename = sys.argv[1]
+            if not re.match(r'(.)*\.data', filename):
+                sys.stdout.write('Use: python3 {} <filename.data>\n'.format(sys.argv[0]))
+                exit(1)
+
+            data = SearchParser().read_data(filename)  # 'webscaper/test.data'
+            builder = SearchBuilder(data)
+            seeker = ParameterizedSeeker(builder)
+        else:
+            seeker = Seeker()
         client = Client(target_url, seeker)
         client.run()
     except InvalidUrlException as e:

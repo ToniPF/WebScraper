@@ -1,7 +1,6 @@
 #!/user/bin/env python3
 # -*- coding: utf-8 -*-
 # vim: set fileencoding=utf8
-import sys
 from abc import ABC, abstractmethod
 from product import Product
 from search_builder import SearchBuilder

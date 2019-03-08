@@ -92,7 +92,6 @@ class SearchParser(object):
         with open(filename, 'r') as file:
             reader = (line for line in map(str.strip, file) if line and line[0] != '*')
             for line in reader:
-                print(line)
                 if SearchParser.URL.match(line):
                     url = line
                 elif SearchParser.CONTAINER.match(line):
