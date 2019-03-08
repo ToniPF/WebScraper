@@ -4,7 +4,8 @@
 import sys
 from abc import ABC, abstractmethod
 from product import Product
-import search_builder
+from search_builder import SearchBuilder
+from exceptions import IllegalArgumentError
 
 
 class ISeeker(ABC):
@@ -91,19 +92,24 @@ class ParameterizedSeeker(ISeeker):
 
     containers, sub_containers, items, tmp_items = None, [], [], []
 
-    def seek(self, tree):
-        exec(search_builder.build_container_search())
+    def __init__(self, builder):
+        if not isinstance(builder, SearchBuilder):
+            raise IllegalArgumentError
+        self.builder = builder
 
-        sub_container_search = search_builder.build_sub_container_search()
+    def seek(self, tree):
+        exec(self.builder.build_container_search())
+
+        sub_container_search = self.builder.build_sub_container_search()
 
         if not sub_container_search:
             ParameterizedSeeker.sub_containers = ParameterizedSeeker.containers
         else:
             for container in ParameterizedSeeker.containers:
-                exec(search_builder.build_sub_container_search())
+                exec(self.builder.build_sub_container_search())
 
         for content in ParameterizedSeeker.sub_containers:
-            for search in search_builder.build_items_search():
+            for search in self.builder.build_items_search():
                 exec(search)
 
             ParameterizedSeeker.items.append(ParameterizedSeeker.tmp_items)
