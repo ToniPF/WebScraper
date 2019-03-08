@@ -75,6 +75,14 @@ def add_tabs(indent_depth):
 #
 ################################################################################
 
+class SearchParams(object):
+
+    def __init__(self, url, container, items, subcontainer=[]):
+        self.url = url
+        self.container = container
+        self.items = items
+        self.subcontainer = subcontainer
+
 
 URL = re.compile('https?://(?:[-\w.]|(?:%[\da-fA-F]{2}))+')
 CONTAINER = re.compile(r'^\s*\t*container\s*=\s*.*')
@@ -173,4 +181,4 @@ def print_data_file_format():
     print('#####################################')
 
 
-read_data('webscaper/test.data')
+# read_data('webscaper/test.data')
