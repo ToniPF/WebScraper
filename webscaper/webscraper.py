@@ -24,6 +24,7 @@ def main():
                 exit(1)
 
             data = SearchParser().read_data(filename)  # 'webscaper/test.data'
+            target_url = Url(data.url)
             builder = SearchBuilder(data)
             seeker = ParameterizedSeeker(builder)
         else:

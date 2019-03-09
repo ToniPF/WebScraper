@@ -12,8 +12,8 @@ class SearchBuilder(object):
 
     conditional = "if content:\n"
     item_content = "    content = content.find('{}','{}')\n"
-    text_select = "    ParameterizedSeeker.tmp_items.append(content.text)\n"
-    tag_select = "    ParameterizedSeeker.tmp_items.append(content['{}'])\n"
+    text_select = "    ParameterizedSeeker.tmp_items.append(content.text.strip())\n"
+    tag_select = "    ParameterizedSeeker.tmp_items.append(content['{}'].strip())\n"
     item_end = "else:\n" \
                "    ParameterizedSeeker.tmp_items.append('unknown')"
     string_tab = "    "
@@ -82,6 +82,8 @@ class SearchParams(object):
 
 class SearchParser(object):
 
+    nothing = '¬'
+
     URL = re.compile('https?://(?:[-\w.]|(?:%[\da-fA-F]{2}))+')
     CONTAINER = re.compile(r'^\s*\t*container\s*=\s*.*')
     SUBCONTAINER = re.compile(r'^\s*\t*subcontainer\s*=\s*.*')
@@ -106,10 +108,10 @@ class SearchParser(object):
                 sys.exit(1)
 
             container = self.parse_container(container_line)
-            sub_container = self.parse_container(sub_container_line)
             items = self.parse_items(items_lines)
-        if id(sub_container) == id(''):
+        if id(sub_container_line) == id(''):
             return SearchParams(url, container, items)
+        sub_container = self.parse_container(sub_container_line)
         return SearchParams(url, container, items, sub_container)
 
     def parse_items(self, items_lines):
@@ -130,7 +132,7 @@ class SearchParser(object):
                 sys.exit(1)
             new_item.append(item)
         item_tag = item_tag.strip()
-        if id(item_tag) != id('-'):
+        if id(item_tag) != id(SearchParser.nothing):
             new_item.append(item_tag)
         return new_item
 
@@ -140,7 +142,7 @@ class SearchParser(object):
             self.print_data_file_format()
             sys.exit(1)
         new_container = [it.strip() for it in data[1].split(',')]
-        if id(new_container[1]) == id('-'):
+        if id(new_container[1]) == id(SearchParser.nothing):
             new_container[1] = ''
         return new_container
 
