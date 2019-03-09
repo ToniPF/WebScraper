@@ -2,10 +2,10 @@
 # -*- coding: utf-8 -*-
 # vim set fileencoding=utf-8
 import sys
+import os
 import unittest
 from parameterized import parameterized
-# sys.path.append('../webscaper')
-sys.path.append('/home/toni/Documentos/Ingenieria_Informatica/Curso-3/2Q/WebProject/Homework-1-SimpleWebScraping/WebScraper/webscaper')
+sys.path.append(os.getcwd() + '/webscaper')
 from url import Url
 from exceptions import InvalidUrlException
 
