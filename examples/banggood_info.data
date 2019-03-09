@@ -1,0 +1,14 @@
+* This is the example file
+* ========================
+
+* This is a comment line
+
+* Url:
+    https://www.banggood.com/Flashdeals.html
+
+* Info:
+    container=ul, goodlist_1
+    subcontainer = li, ¬
+    item = span, title > text
+    item = div, priceitem | span, price > oriprice
+    item = div, priceitem | span, price_old > oriprice

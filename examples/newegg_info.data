@@ -1,0 +1,4 @@
+https://www.newegg.com/Product/ProductList.aspx?Submit=ENE&DEPA=0&Order=BESTMATCH&Description=graphic+cards&N=-1&isNodeId=1
+container=div,item-info
+item = a, item-title > text
+item = li, price-ship > text
