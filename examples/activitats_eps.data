@@ -1,0 +1,4 @@
+http://www.eps.udl.cat/ca/
+container=div,featured-links-item
+item=span,flink-title > text
+item=div,description > text
