@@ -10,6 +10,9 @@ WebScraper es un programa para buscar información en páginas web. La búsqueda
 python3 webscraper.py
 ```
 ## Requirements
+```bash
+pip3 install -r requirements.txt  
+```
 beautifulsoup4==4.7.1  
 bs4==0.0.1  
 coverage==4.5.2  
@@ -67,4 +70,82 @@ La clase client.Client actúa como controlador de la búsqueda.
 ##### Client(url : Url, seeker : ISeeker, out=ConsoleMessenger)
 El constructor recibe tres parámetros. El primero de tipo Url que contiene la url sobre la que se realizará la búsqueda. El segundo es un parámetro de tipo ISeeker, que es el encargado de realizar la búsqueda. Y el tercero es el componente encargado de enviar la información (por defecto recibe un ConsoleMessenger, de modo que la información se envía a través de la salida estándar).
 
-El Cliente se sirve además de los métodos de las clases tools.Downloader y tools.HTMLParser para descargar y parsear el html de la página.
+El Cliente se sirve además de los métodos de las clases tools.Downloader y tools.HTMLParser para descargar y *parsear* el html de la página.
+
+
+# Configurador automático de busquedas
+Esta funcionalidad se compone de tres elementos:
+* El primero es un componente de tipo ISeeker. La idea principal de este componente es que realiza la búsqueda que compone un SearchBuilder.
+* El componente SearchBuilder se encarga de componer la búsqueda a partir de unas estructuras de datos que un *parser* se encarga de capturar de un archivo `*.data`.
+* El componente SearchParser se encarga de *parsear* los datos necesarios para componer la búsqueda.
+
+Cave destacar que esta funcionalidad es solo un prototipo. De modo que no es todo lo eficiente, fiable y robusta que cabria esperar. Además solo unos pocos tipos de búsqueda están soportados.
+
+## Usage
+```bash
+python3 webscraper.py <filename>.data
+```
+
+## Archivo de configuración
+Se trata de un archivo `*.data`. El formato de archivo se describe a continuación:
++ La primera línea corresponde a la url de la página en la que se desea buscar. Cave destacar que el formato de la url debe ser https://www.example.com/ o https://example.com/, no acepta urls del tipo www.example.com/.
+
++ La segunda línea viene marcada con la palabra `container=`. En esta se pasan los valores que identifican el *container* html en el que se quiere buscar.
+
++ La tercera línea va marcada con la palabra `subcontainer=`. Aquí se puede indicar una ubicación que estuviera anidada en el primer container. Esta línea es opcional (puede omitirse).
+
++ Las lineas sucesivas, marcadas con la palabra `item=` están reservadas para la localización de todas aquellas informaciones que se quieran recopilar de el html.
+
+#### Archivo ejemplo:
+
+##### Template del archivo
+```bash
+https://www.example.com/
+container = tag, class
+subcontainer = tag, class
+item = tag, class > atribute
+item = tag, class > text
+item = tag, class | tag, class > text
+item = tag, class | tag, class | ...
+```
+***
+##### Ejemplo de como generar el archivo:
+###### html de ejemplo
+```
+<ul class='goodlist_1'>
+  <li>
+    <span>Title Item 1</span>
+    <div class='priceitem'>
+      <span class='price' oriprice='10.00'> </span>
+    </div>
+    <div class='priceitem'>
+      <span class='price_old' oriprice='12.00'> </span>
+    </div>
+    <span>Title Item 2</span>
+    <div class='priceitem'>
+      <span class='price' oriprice='5.00'> </span>
+    </div>
+    <div class='priceitem'>
+      <span class='price_old' oriprice='8.50'> </span>
+    </div>
+  </li>
+</ul>
+```
+El archivo para obtener la información referente a los *items* de este html sería el que se muestra a continuación.
+- El elemento `,` separa `tag` de `class`.
+- El elemento `|` separa los diferentes elementos anidados.
+- El elemento `>` indica el atributo que se quiere seleccionar.
+- El elemento `¬` significa vacío.
+- La palabra `text` indica que se quiere seleccionar el contenido de tipo texto de un *tag*.
+- Cualquier línea del archivo que empiece por `*` será ignorada.
+###### archivo `.data` de ejemplo
+```
+https://www.banggood.com/Flashdeals.html
+container=ul, goodlist_1
+subcontainer = li, ¬
+item = span, title > text
+item = div, priceitem | span, price > oriprice
+item = div, priceitem | span, price_old > oriprice
+```
+En la carpeta `WebScraper/examples` pueden encontrarse algunos ejemplos de este tipo de archivos.
+***
