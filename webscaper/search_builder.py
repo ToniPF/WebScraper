@@ -130,6 +130,8 @@ class SearchParser(object):
             if len(item) != 2:
                 self.print_data_file_format()
                 sys.exit(1)
+            if id(item[1]) == id(SearchParser.nothing):
+                item = (item[0], '')
             new_item.append(item)
         item_tag = item_tag.strip()
         if id(item_tag) != id(SearchParser.nothing):
